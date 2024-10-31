@@ -103,9 +103,17 @@ simulate_encrypted_mpc <- function(initial_state, time_horizon = 5.0, dt = 0.1, 
 
 # Initial conditions and run the simulation
 initial_state <- c(2.0, 300.0)  # Initial concentration (CA) and temperature (T)
+start_time <- Sys.time()
 results <- simulate_encrypted_mpc(initial_state)
+end_time <- Sys.time()
+time_taken <- end_time - start_time
+cat("Time taken for the simulation:", time_taken, "seconds\n")
 
+# Save the plot as a PNG file
+png("R_CSTR_simulation_results.png", width = 800, height = 600)  # Specify the filename and dimensions
 # Plot results
-plot(results[, 1], type = "l", col = "red", ylim = range(results), ylab = "States", xlab = "Time step")
-lines(results[, 2], col = "blue")
-legend("topright", legend = c("Concentration (CA)", "Temperature (T)"), col = c("red", "blue"), lty = 1)
+plot(results[, 1], type = "l", col = "blue", ylim = range(results), ylab = "States", xlab = "Time step")
+lines(results[, 2], col = "red")
+legend("topright", legend = c("Concentration (CA)", "Temperature (T)"), col = c("blue", "red"), lty = 1)
+# Close the PNG device
+dev.off()
