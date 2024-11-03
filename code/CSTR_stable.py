@@ -1,3 +1,5 @@
+# To generate results for CSTR with recycle example (Section 4) in the paper on Encrypted model predictive control design for security to cyberattacks
+
 import numpy as np
 from scipy.integrate import odeint
 from scipy.optimize import minimize
