@@ -6,7 +6,6 @@ from scipy.optimize import minimize
 from phe import paillier
 import matplotlib.pyplot as plt
 
-# Define system dynamics for stable steady-state CSTR
 def cstr_dynamics_stable(x, t, u):
     CA, T = x
     k0, E, R, delta_H, rho, Cp, V, F = 1.0, 5000, 8.314, -5000, 1.0, 4.18, 100.0, 1.0
@@ -15,7 +14,6 @@ def cstr_dynamics_stable(x, t, u):
     dTdt = F/V * (300 - T) + (-delta_H) / (rho * Cp) * k0 * np.exp(-E / (R * T)) * CA**2 + Q / (rho * Cp * V)
     return [dCAdt, dTdt]
 
-# Define cost function for MPC
 def cost_function_stable(u, x0, N, dt):
     u = np.reshape(u, (N, 2))
     state = np.array(x0)
@@ -25,24 +23,20 @@ def cost_function_stable(u, x0, N, dt):
         total_cost += np.sum((state - [2.96, 320])**2) + np.sum(u[i]**2)
     return total_cost
 
-# Nonlinear MPC Optimization
 def mpc_optimization_stable(x0, N=10, umin=[0, 0], umax=[7.5, 80], dt=0.1):
     u0 = np.random.rand(N, 2) * (np.array(umax) - np.array(umin)) + np.array(umin)
     bounds = [(umin[i], umax[i]) for i in range(2)] * N
     result = minimize(cost_function_stable, u0.flatten(), args=(x0, N, dt), bounds=bounds, method='SLSQP')
     return result.x[:2]
 
-# Paillier Encryption Setup
 public_key, private_key = paillier.generate_paillier_keypair()
 
-# Encrypt and Decrypt functions
 def encrypt_data(data):
     return [public_key.encrypt(val) for val in data]
 
 def decrypt_data(encrypted_data):
     return np.array([private_key.decrypt(val) for val in encrypted_data])
 
-# Simulation loop with MPC and encryption
 def simulate_encrypted_mpc_stable(initial_state, time_horizon=5.0, dt=0.1):
     times = np.arange(0, time_horizon + dt, dt)
     state = initial_state
@@ -57,7 +51,6 @@ def simulate_encrypted_mpc_stable(initial_state, time_horizon=5.0, dt=0.1):
         all_states.append(state)
     return np.array(all_states), np.array(controls), times
 
-# Plotting functions
 def plot_state_trajectories(states, times):
     plt.figure(figsize=(12, 5))
     plt.subplot(1, 2, 1)
@@ -94,10 +87,8 @@ def plot_control_inputs(controls, times):
     plt.tight_layout()
     plt.savefig('Stable_control.png')
 
-# Run simulation for stable steady-state CSTR
+# Sample inputs to run simulation
 initial_state_stable = [2.0, 300.0]
 states, controls, times = simulate_encrypted_mpc_stable(initial_state_stable)
-
-# Plot state and control trajectories
 plot_state_trajectories(states, times)
 plot_control_inputs(controls, times)
